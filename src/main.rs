@@ -2,7 +2,7 @@ use std::io;
 
 #[derive(Debug)]
 enum HtmlElement {
-    Doctype,
+    Doctype(String),
     Title(String),
     Heading1(String),
     Heading2(String),
@@ -12,7 +12,7 @@ enum HtmlElement {
 impl HtmlElement {
     fn render(&self) -> String {
         match self {
-            HtmlElement::Doctype => String::from("<!DOCTYPE html>"),
+            HtmlElement::Doctype(value) => String::from("<!DOCTYPE html>"),
             HtmlElement::Title(value) => format!("<title>{}</title>", value),
             HtmlElement::Heading1(value) => format!("<h1>{}</h1>", value),
             HtmlElement::Heading2(value) => format!("<h2>{}</h2>", value),
