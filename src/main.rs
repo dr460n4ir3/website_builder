@@ -1,8 +1,9 @@
 use std::io;
+use std::fs::File;
+use std::io::prelude::*;
 
 #[derive(Debug)]
 enum HtmlElement {
-    Doctype(String),
     Title(String),
     Heading1(String),
     Heading2(String),
@@ -12,7 +13,6 @@ enum HtmlElement {
 impl HtmlElement {
     fn render(&self) -> String {
         match self {
-            HtmlElement::Doctype(value) => String::from("<!DOCTYPE html>"),
             HtmlElement::Title(value) => format!("<title>{}</title>", value),
             HtmlElement::Heading1(value) => format!("<h1>{}</h1>", value),
             HtmlElement::Heading2(value) => format!("<h2>{}</h2>", value),
@@ -21,7 +21,38 @@ impl HtmlElement {
     }
 }
 
-// write a function that will input text for the values of <title>, <h1>, <h2>,<p> tags and return a string of html
+// NOTE: need to fix this function!
+fn update_html() -> bool {
+    let mut update = String::new();
+    println!("Do you want to update the html file? (y/n)");
+    io::stdin()
+        .read_line(&mut update)
+        .expect("Failed to read line");
+    let update = update.trim();
+    if update == "y" {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// create a function to write the `full_html` string to a file
+fn write_html_to_file(full_html: &str) {
+    let mut file = match File::create("index.html") {
+        Ok(file) => file,
+        Err(err) => {
+            println!("Could not create file: {}", err);
+            return;
+        }
+    };
+
+    match file.write_all(full_html.as_bytes()) {
+        Ok(_) => println!("HTML written to file"),
+        Err(err) => println!("Could not write to file: {}", err),
+    };
+}
+
+
 fn main() {
     let mut title = String::new();
     let mut h1 = String::new();
@@ -43,12 +74,6 @@ fn main() {
         HtmlElement::Heading2(h2),
         HtmlElement::Paragraph(p),
     ];
-
-    // let html = html_elements
-    //     .iter()
-    //     .map(|element| element.render())
-    //     .collect::<Vec<String>>()
-    //     .join("\n");
 
     let full_html = format!(
         "<!DOCTYPE html>
@@ -74,4 +99,20 @@ fn main() {
     println!("");
     println!("{}", full_html);
     println!("");
+    write_html_to_file(&full_html);
+
+    let should_update = update_html();
+
+    if should_update {
+        println!("Updating html file...");
+    } else {
+        println!("Not updating html file...");
+    }
+
+    if should_update {
+        write_html_to_file(&full_html);
+    }
+
 }
+
+        
